@@ -1,0 +1,126 @@
+<script src="https://unpkg.com/vue@3"></script>
+<div id="app">
+  <div class="row">
+    <div v-for="(items, key) in masonry" :key="key" class="column">
+      <div v-for="(item, k) in items" :key="k" class="item" :style="`height: ${masonryHeight[key][k]}px;`">
+        <img @load="onImgLoad($event, key, k)" :src="item" class="easeload" :class="{'easeloaded': masonryLoaded[key][k]}">
+      </div>
+    </div>
+  </div>
+</div>
+<style scoped>
+  body {
+    background: #000;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  .easeload {
+    opacity: 0;
+    transition: all 2s ease;
+  }
+
+  .easeloaded {
+    opacity: 1;
+  }
+
+  .row {
+    display: flex;
+  }
+
+  .column {
+    flex: calc(100% / 7);
+  }
+
+  .item {
+    height: 0;
+    transition: height 1s ease;
+    overflow: hidden;
+  }
+
+  @media screen and (max-width: 800px) {
+    .column {
+      flex: 50%;
+      max-width: 50%;
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    .column {
+      flex: 100%;
+      max-width: 100%;
+    }
+  }
+</style>
+<script>
+  const {
+    createApp
+  } = Vue
+  createApp({
+    data() {
+      return {
+        masonry: [],
+        masonryHeight: [],
+        masonryLoaded: [],
+        masonryColumn: 7,
+        masonryColumnItem: 5,
+        hostImg: "https://source.unsplash.com/random/",
+        randomIndex: 1,
+        maxImage: 0,
+        interval: null,
+        intervalTime: 3000,
+      };
+    },
+    created() {
+      this.maxImage = this.masonryColumn * this.masonryColumnItem;
+      this.loadImages();
+    },
+    mounted() {
+      this.todo();
+    },
+    methods: {
+      onImgLoad(e, i, j) {
+        console.log(e.path[0].clientHeight, i, j);
+        this.masonryHeight[i][j] = e.path[0].clientHeight;
+        this.masonryLoaded[i][j] = true;
+      },
+      loadImages() {
+        for (let i = 0; i < this.masonryColumn; i++) {
+          let items = [];
+          let height = [];
+          let loaded = [];
+          for (let j = 0; j < this.masonryColumnItem; j++) {
+            let imgUrl = `${this.hostImg}${this.randomIndex++}`;
+            items.push(imgUrl);
+            height.push(0);
+            loaded.push(false);
+          }
+          this.masonry.push(items);
+          this.masonryHeight.push(height);
+          this.masonryLoaded.push(loaded);
+        }
+      },
+      refreshImages() {
+        let column = Math.floor(Math.random() * ((this.masonryColumn - 1) - 0 + 1)) + 0;
+        let index = Math.floor(Math.random() * ((this.masonryColumnItem - 1) - 0 + 1)) + 0;
+        console.log(column, index);
+        let imgUrl = `${this.hostImg}${this.randomIndex++}`;
+        this.masonry[column][index] = imgUrl;
+        if (this.randomIndex > this.maxImage * 2) {
+          this.randomIndex = 1;
+        }
+        this.masonryLoaded[column][index] = false;
+      },
+      todo() {
+        this.interval = setInterval(function() {
+          this.refreshImages();
+        }.bind(this), this.intervalTime);
+      },
+    },
+  }).mount('#app')
+</script>
