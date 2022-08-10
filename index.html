@@ -69,11 +69,13 @@
         masonryLoaded: [],
         masonryColumn: 7,
         masonryColumnItem: 5,
+        masonryRandomOrigin: [],
+        masonryRandom: [],
         hostImg: "https://source.unsplash.com/random/",
         randomIndex: 1,
         maxImage: 0,
         interval: null,
-        intervalTime: 3000,
+        intervalTime: 5000,
       };
     },
     created() {
@@ -85,7 +87,6 @@
     },
     methods: {
       onImgLoad(e, i, j) {
-        console.log(e.path[0].clientHeight, i, j);
         this.masonryHeight[i][j] = e.path[0].clientHeight;
         this.masonryLoaded[i][j] = true;
       },
@@ -99,6 +100,9 @@
             items.push(imgUrl);
             height.push(0);
             loaded.push(false);
+            let index = i.toString() + j.toString();
+            this.masonryRandom.push(index)
+            this.masonryRandomOrigin.push(index)
           }
           this.masonry.push(items);
           this.masonryHeight.push(height);
@@ -106,9 +110,20 @@
         }
       },
       refreshImages() {
-        let column = Math.floor(Math.random() * ((this.masonryColumn - 1) - 0 + 1)) + 0;
-        let index = Math.floor(Math.random() * ((this.masonryColumnItem - 1) - 0 + 1)) + 0;
-        console.log(column, index);
+        if (!this.masonryRandom.length) {
+          this.masonryRandom = this.masonryRandomOrigin;
+        }
+        let random = this.masonryRandom[Math.floor(Math.random()*this.masonryRandom.length)];
+        let indexOf = this.masonryRandom.indexOf(random);
+        if (indexOf !== -1) {
+          this.masonryRandom.splice(indexOf, 1);
+        }
+        let randomArr = random.split('');
+        let column = randomArr[0];
+        let index = randomArr[1];
+
+        console.log(this.masonryRandom.length, column, index);
+        
         let imgUrl = `${this.hostImg}${this.randomIndex++}`;
         this.masonry[column][index] = imgUrl;
         if (this.randomIndex > this.maxImage * 2) {
