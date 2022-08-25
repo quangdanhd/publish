@@ -1,10 +1,10 @@
-<!-- <script src="https://unpkg.com/vue@3"></script> -->
-<script src="https://unpkg.com/vue@3.2.37/dist/vue.global.prod.js"></script>
+<script src="https://unpkg.com/vue@3"></script>
+<!-- <script src="https://unpkg.com/vue@3.2.37/dist/vue.global.prod.js"></script> -->
 <div id="app">
   <div class="row">
     <div v-for="(items, key) in masonry" :key="key" class="column">
       <div v-for="(item, k) in items" :key="k" class="item" :style="`height: ${masonryHeight[key][k]}px;`">
-        <img @load="onImgLoad($event, key, k)" :src="item" class="easeload" :class="{'easeloaded': masonryLoaded[key][k]}">
+        <img @click="onImgClick(key, k)" @load="onImgLoad($event, key, k)" :src="item" class="easeload" :class="{'easeloaded': masonryLoaded[key][k]}">
       </div>
     </div>
   </div>
@@ -40,7 +40,7 @@
 
   .item {
     height: 0;
-    transition: height 1s ease;
+    transition: height 2s ease;
     overflow: hidden;
   }
 
@@ -91,6 +91,14 @@
         this.masonryHeight[i][j] = e.path[0].clientHeight;
         this.masonryLoaded[i][j] = true;
       },
+      onImgClick(i, j) {
+        let imgUrl = `${this.hostImg}${this.randomIndex++}`;
+        let self = this;
+        setTimeout(function() {
+          self.masonry[i][j] = imgUrl;
+        }, 2000)
+        this.masonryHeight[i][j] = 0;
+      },
       loadImages() {
         for (let i = 0; i < this.masonryColumn; i++) {
           let items = [];
@@ -126,10 +134,14 @@
         console.log(this.masonryRandom.length, column, index);
 
         let imgUrl = `${this.hostImg}${this.randomIndex++}`;
-        this.masonry[column][index] = imgUrl;
+        let self = this;
+        setTimeout(function() {
+          self.masonry[column][index] = imgUrl;
+        }, 2000)
         if (this.randomIndex > this.maxImage * 2) {
           this.randomIndex = 1;
         }
+        this.masonryHeight[column][index] = 0;
         this.masonryLoaded[column][index] = false;
       },
       todo() {
