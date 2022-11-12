@@ -63,7 +63,8 @@ button:focus {
   color: #000;
   border: none;
   border-radius: 4px;
-  padding: 0 12.5px;
+  padding: 0 5px;
+  font-size: 14px;
 }
 .main-app .items .item {
   margin-top: 10px;
@@ -83,6 +84,9 @@ button:focus {
 }
 .main-app .footer .item .img {
   height: 35px;
+}
+.main-app .row-3 {
+  font-size: 11px;
 }
 
 /*# sourceMappingURL=app.css.map */
